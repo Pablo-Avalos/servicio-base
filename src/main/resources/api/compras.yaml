@@ -1,0 +1,106 @@
+openapi: 3.0.2
+info:
+  title: mercado-organizado
+  version: 1.0.0
+  description: >-
+    API de compras de mercado libre
+paths:
+  /v1/mercado/organizado/guardar:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParametrosDTO'
+        required: true
+      tags:
+        - compras-controller-v1
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseApiCompras'
+          description: |-
+            OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseApiCompras'
+          description: |-
+            Error al guardar compras
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseApiCompras'
+          description: |-
+            Internal Server Error
+      summary: Compras guardar
+      description: Guarda una compra
+    description: ''
+components:
+  schemas:
+    ErrorData:
+      title: Root Type for Error
+      description: The root of the Error type's schema.
+      type: object
+      properties:
+        code:
+          type: string
+        detail:
+          type: string
+      example:
+        code: 400
+        detail: Error en guardar compra
+    MetaData:
+      type: object
+      properties:
+        method:
+          type: string
+        operation:
+          type: string
+      example:
+        method: POST
+        operation: /v1/mercado/organizado/guardar
+    ResponseCompra:
+      description: 'Response data'
+      type: object
+      properties: 
+        guardada:
+          type: boolean
+          description: Indica si una compra fue exitosa
+          example: true
+    ParametrosDTO:
+      description: 'Producto elegido'
+      type: object
+      properties: 
+        id:
+          type: integer
+          format: int64
+          description: Identificador univoco del producto
+          example: 1
+        fecha:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[0-1])T([0-1][1-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]).\d{3}Z$'
+          description: Fecha de compra del producto
+          example: "2020-08-31T20:08:06.747Z"
+    ResponseApiCompras:
+      title: Respuesta para el guardar compras ResponseApiCompras
+      description: Respuesta para el guardar compras
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/MetaData'
+          properties:
+            method:
+              type: string
+            operation:
+              type: string
+        data:
+          $ref: '#/components/schemas/ResponseCompra'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorData'
