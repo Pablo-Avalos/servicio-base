@@ -4,6 +4,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import javax.net.ssl.SSLContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -12,6 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,27 +23,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import ar.com.mercado.organizado.Demo1Application;
+import ar.com.mercado.organizado.entity.Persona;
 import ar.com.mercado.organizado.exception.ModelException;
-
+import ar.com.mercado.organizado.repository.Repositorio;
 
 
 @Service
 public class Servicio {
+
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Servicio.class);
 	
-	public boolean hacerAlgo(String unaCosa) throws ModelException {
-		LOGGER.info("Comienza a procesar una cosa {}", unaCosa);
-		//TO DO
+	@Autowired
+	@Qualifier("repositorio")
+	private Repositorio repositorio;
+
+	
+	public Persona recuperarPersona(Long id) throws ModelException {
+		LOGGER.info("Comienza a procesar una cosa {}", repositorio);
+		Persona p;
 		try {
-			
+			p = repositorio.findByIdPersona(id);
 		} catch (Exception ex) {
 			LOGGER.error(" Error al procesar: {}", ex.getMessage());
 			
-			throw new ModelException("Error al procesar algo " + unaCosa + ", error: " + ex.getMessage());
+			throw new ModelException("Error al procesar algo " + repositorio + ", error: " + ex.getMessage());
 		}
-		LOGGER.info("Termina de procesar una cosa {}", unaCosa);
-		return true;
+		LOGGER.info("Termina de procesar una cosa {}", repositorio);
+		return p;
 	}
 	
 	public ResponseEntity<String> executePost(String uri, String body) throws ModelException {
@@ -77,6 +88,10 @@ public class Servicio {
 		requestFactory.setHttpClient(httpClient);
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
 		return restTemplate;
+	}
+
+	public void guardarPersona(Persona p) {
+		repositorio.save(p);	
 	}
 
 }

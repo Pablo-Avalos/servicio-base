@@ -4,19 +4,25 @@ import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ar.com.mercado.organizado.api.model.MetaData;
 import ar.com.mercado.organizado.api.model.ResponseApiCompras;
 import ar.com.mercado.organizado.api.model.ResponseCompra;
+import ar.com.mercado.organizado.entity.Persona;
 import ar.com.mercado.organizado.model.Parametros;
+import ar.com.mercado.organizado.service.Servicio;
 
 @RestController
 @RequestMapping("/v1/mercado/organizado")
 public class ComprasController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComprasController.class);
+	
+	@Autowired
+	private Servicio servicio;
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.POST })
 	@PostMapping(value = "/guardar")
@@ -32,6 +38,12 @@ public class ComprasController {
 			
 			MetaData metaData2 = createMetaDataWithMethodAndOperationFrom2(httpServletRequest);
 
+			Persona p = new Persona();
+			
+			//guarda la persona
+			servicio.guardarPersona(p);
+			servicio.recuperarPersona(1L);
+			
 		    responseApi.setMeta(metaData2);
 		    r.guardada(true);
 		    responseApi.setData(r);
